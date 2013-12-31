@@ -205,40 +205,43 @@ mod bench
     use extra::test::BenchHarness;
 
     #[bench]
-    fn bench_md5_10(bh: &mut BenchHarness)
+    fn bench_10(bh: &mut BenchHarness)
     {
-        let mut m = MD5::new();
         let bytes = [1u8, ..10];
 
-        m.reset();
         bh.iter(|| {
+            let mut m = MD5::new();
+            m.reset();
             m.update(bytes);
+            m.digest();
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    fn bench_md5_1k(bh: &mut BenchHarness)
+    fn bench_1k(bh: &mut BenchHarness)
     {
-        let mut m = MD5::new();
         let bytes = [1u8, ..1024];
 
-        m.reset();
         bh.iter(|| {
+            let mut m = MD5::new();
+            m.reset();
             m.update(bytes);
+            m.digest();
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    fn bench_md5_64k(bh: &mut BenchHarness)
+    fn bench_64k(bh: &mut BenchHarness)
     {
-        let mut m = MD5::new();
         let bytes = [1u8, ..64 * 1024];
 
-        m.reset();
         bh.iter(|| {
+            let mut m = MD5::new();
+            m.reset();
             m.update(bytes);
+            m.digest();
         });
         bh.bytes = bytes.len() as u64;
     }

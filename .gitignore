@@ -1,3 +1,9 @@
 # Build stuff
 .rust_build
 /lib
+
+# Misc stuff
+.*
+!.gitignore
+!.gitmodules
+!.editorconfig
