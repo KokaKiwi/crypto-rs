@@ -7,4 +7,5 @@
 
 extern mod extra;
 
+pub mod base58;
 pub mod hash;

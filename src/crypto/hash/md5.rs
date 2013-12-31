@@ -219,6 +219,20 @@ mod bench
     }
 
     #[bench]
+    fn bench_64(bh: &mut BenchHarness)
+    {
+        let bytes = [1u8, ..64];
+
+        bh.iter(|| {
+            let mut m = MD5::new();
+            m.reset();
+            m.update(bytes);
+            m.digest();
+        });
+        bh.bytes = bytes.len() as u64;
+    }
+
+    #[bench]
     fn bench_1k(bh: &mut BenchHarness)
     {
         let bytes = [1u8, ..1024];
