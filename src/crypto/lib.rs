@@ -1,10 +1,10 @@
-#[link(
-    name = "crypto",
-    vers = "0.1.0",
-    uuid = "992ef7fe-9b86-4adf-b638-31b6405f2037",
-    package_id = "crypto"
-)];
+#[crate_type = "rlib"];
+#[crate_type = "dylib"];
+
+#[crate_id = "crypto#0.1.0"];
 
 #[license = "MIT"];
 
-#[crate_type = "lib"];
+extern mod extra;
+
+pub mod hash;
