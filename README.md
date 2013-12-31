@@ -9,6 +9,7 @@ Currently implemented
 Hash:
 
 - MD5
+- SHA1
 
 Misc:
 

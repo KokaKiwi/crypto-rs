@@ -1,38 +1,20 @@
-use std::vec;
-
 use super::Hasher;
 
-static r: [u32, ..64]=  [
-    7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-    5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-    4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-    6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,
-];
+use std::vec;
 
-static k: [u32, ..64] = [
-    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
-];
-
-pub struct MD5
+pub struct SHA1
 {
-    priv h: [u32, ..4],
+    priv h: [u32, ..5],
     priv data: ~[u8],
     priv length: u64,
 }
 
-impl MD5
+impl SHA1
 {
-    pub fn new() -> MD5
+    pub fn new() -> SHA1
     {
-        MD5 {
-            h: [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476],
+        SHA1 {
+            h: [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0],
             data: ~[],
             length: 0,
         }
@@ -42,41 +24,51 @@ impl MD5
     {
         assert_eq!(block.len(), 64);
 
-        let mut words = [0u32, ..16];
+        let mut words = [0u32, ..80];
         for (i, chunk) in block.chunks(4).enumerate()
         {
             words[i] =
-                    (chunk[0] as u32)
-                |   (chunk[1] as u32 << 8)
-                |   (chunk[2] as u32 << 16)
-                |   (chunk[3] as u32 << 24)
+                    (chunk[3] as u32)
+                |   (chunk[2] as u32 << 8)
+                |   (chunk[1] as u32 << 16)
+                |   (chunk[0] as u32 << 24)
             ;
         }
 
         let ff = |b: u32, c: u32, d: u32| d ^ (b & (c ^ d));
-        let gg = |b: u32, c: u32, d: u32| c ^ (d & (b ^ c));
-        let hh = |b: u32, c: u32, d: u32| (b ^ c ^ d);
-        let ii = |b: u32, c: u32, d: u32| (c ^ (b | !d));
+        let gg = |b: u32, c: u32, d: u32| b ^ c ^ d;
+        let hh = |b: u32, c: u32, d: u32| (b & c) | (d & (b | c));
+        let ii = |b: u32, c: u32, d: u32| b ^ c ^ d;
 
         let left_rotate = |x: u32, n: u32| (x << n) | (x >> (32 - n));
 
-        let h = self.h;
-        let (mut a, mut b, mut c, mut d) = (h[0], h[1], h[2], h[3]);
-
-        for i in range(0u, 64u)
+        for i in range(16, 80)
         {
-            let (f, g) = match i {
-                0..15   => (ff(b, c, d), i),
-                16..31  => (gg(b, c, d), (5 * i + 1) % 16),
-                32..47  => (hh(b, c, d), (3 * i + 5) % 16),
-                48..63  => (ii(b, c, d), (7 * i) % 16),
+            let n = words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16];
+            words[i] = left_rotate(n, 1);
+        }
+
+        let mut a = self.h[0];
+        let mut b = self.h[1];
+        let mut c = self.h[2];
+        let mut d = self.h[3];
+        let mut e = self.h[4];
+
+        for i in range(0, 80)
+        {
+            let (f, k) = match i {
+                0..19  => (ff(b, c, d), 0x5a827999),
+                20..39 => (gg(b, c, d), 0x6ed9eba1),
+                40..59 => (hh(b, c, d), 0x8f1bbcdc),
+                60..79 => (ii(b, c, d), 0xca62c1d6),
                 _ => (0, 0),
             };
 
-            let tmp = d;
+            let tmp = left_rotate(a, 5) + f + e + k + words[i];
+            e = d;
             d = c;
-            c = b;
-            b = left_rotate(a + f + k[i] + words[g], r[i]) + b;
+            c = left_rotate(b, 30);
+            b = a;
             a = tmp;
         }
 
@@ -84,14 +76,15 @@ impl MD5
         self.h[1] += b;
         self.h[2] += c;
         self.h[3] += d;
+        self.h[4] += e;
     }
 }
 
-impl Hasher for MD5
+impl Hasher for SHA1
 {
     fn reset(&mut self)
     {
-        self.h = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
+        self.h = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
         self.data = ~[];
         self.length = 0;
     }
@@ -120,7 +113,7 @@ impl Hasher for MD5
 
     fn output(&self, out: &mut [u8])
     {
-        let mut m = MD5 {
+        let mut m = SHA1 {
             h: self.h,
             data: ~[],
             length: 0,
@@ -132,7 +125,7 @@ impl Hasher for MD5
         data.push_all(vec::from_elem(size, 0x00 as u8));
 
         let size_bits = self.length * 8;
-        size_bits.iter_bytes(true, |buf| {
+        size_bits.iter_bytes(false, |buf| {
             data.push_all(buf);
             true
         });
@@ -142,7 +135,7 @@ impl Hasher for MD5
 
         for n in m.h.iter()
         {
-            n.iter_bytes(true, |buf| {
+            n.iter_bytes(false, |buf| {
                 bytes.push_all(buf);
                 true
             });
@@ -156,7 +149,7 @@ impl Hasher for MD5
 
     fn output_size_bits(&self) -> uint
     {
-        128
+        160
     }
 
     fn block_size_bits(&self) -> uint
@@ -168,7 +161,7 @@ impl Hasher for MD5
 #[cfg(test)]
 mod test
 {
-    use super::MD5;
+    use super::SHA1;
 
     #[test]
     fn test_simple()
@@ -178,12 +171,12 @@ mod test
             data.map(|c| format!("{:02x}", *c)).concat()
         }
 
-        let mut m = MD5::new();
+        let mut m = SHA1::new();
 
         let tests = [
-            ("The quick brown fox jumps over the lazy dog", ~"9e107d9d372bb6826bd81d3542a419d6"),
-            ("The quick brown fox jumps over the lazy dog.", ~"e4d909c290d0fb1ca068ffaddf22cbd0"),
-            ("", ~"d41d8cd98f00b204e9800998ecf8427e"),
+            ("The quick brown fox jumps over the lazy dog", ~"2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"),
+            ("The quick brown fox jumps over the lazy cog", ~"de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3"),
+            ("", ~"da39a3ee5e6b4b0d3255bfef95601890afd80709"),
         ];
 
         for &(s, ref h) in tests.iter()
@@ -193,7 +186,10 @@ mod test
             m.reset();
             m.update(data);
 
-            assert_eq!(to_hex(m.digest()), *h);
+            let hh = to_hex(m.digest());
+
+            assert_eq!(hh.len(), h.len());
+            assert_eq!(hh, *h);
         }
     }
 }
@@ -201,7 +197,7 @@ mod test
 #[cfg(test)]
 mod bench
 {
-    use super::MD5;
+    use super::SHA1;
     use extra::test::BenchHarness;
 
     #[bench]
@@ -210,7 +206,7 @@ mod bench
         let bytes = [1u8, ..10];
 
         bh.iter(|| {
-            let mut m = MD5::new();
+            let mut m = SHA1::new();
             m.reset();
             m.update(bytes);
             m.digest();
@@ -224,7 +220,7 @@ mod bench
         let bytes = [1u8, ..64];
 
         bh.iter(|| {
-            let mut m = MD5::new();
+            let mut m = SHA1::new();
             m.reset();
             m.update(bytes);
             m.digest();
@@ -238,7 +234,7 @@ mod bench
         let bytes = [1u8, ..1024];
 
         bh.iter(|| {
-            let mut m = MD5::new();
+            let mut m = SHA1::new();
             m.reset();
             m.update(bytes);
             m.digest();
@@ -252,7 +248,7 @@ mod bench
         let bytes = [1u8, ..64 * 1024];
 
         bh.iter(|| {
-            let mut m = MD5::new();
+            let mut m = SHA1::new();
             m.reset();
             m.update(bytes);
             m.digest();
@@ -264,7 +260,7 @@ mod bench
     fn bench_update_64(bh: &mut BenchHarness)
     {
         let bytes = [1u8, ..64];
-        let mut m = MD5::new();
+        let mut m = SHA1::new();
         m.reset();
 
         bh.iter(|| {
@@ -277,7 +273,7 @@ mod bench
     fn bench_update_64k(bh: &mut BenchHarness)
     {
         let bytes = [1u8, ..64 * 1024];
-        let mut m = MD5::new();
+        let mut m = SHA1::new();
         m.reset();
 
         bh.iter(|| {
@@ -290,7 +286,7 @@ mod bench
     fn bench_update_128k(bh: &mut BenchHarness)
     {
         let bytes = [1u8, ..2 * 64 * 1024];
-        let mut m = MD5::new();
+        let mut m = SHA1::new();
         m.reset();
 
         bh.iter(|| {
