@@ -1,4 +1,3 @@
-RUST_MODULES		:=	crypto
-RUSTCFLAGS			+=	--opt-level=3
+RUSTCRATES          :=  crypto
 
-include				rust-mk/rust.mk
+include             rust-mk/rust.mk
