@@ -7,3 +7,4 @@
 !.gitignore
 !.gitmodules
 !.editorconfig
+!.travis.yml
