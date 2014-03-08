@@ -1,4 +1,5 @@
 use super::Hasher;
+use std::io::{MemWriter, BufWriter};
 
 use std::vec;
 
@@ -111,6 +112,7 @@ impl Hasher for SHA1
         }
     }
 
+    #[allow(unused_must_use)]
     fn output(&self, out: &mut [u8])
     {
         let mut m = SHA1 {
@@ -119,31 +121,17 @@ impl Hasher for SHA1
             length: 0,
         };
 
-        let mut data = self.data.clone();
-        let size = 56 - data.len() - 1;
-        data.push(0x80 as u8);
-        data.push_all(vec::from_elem(size, 0x00 as u8));
+        let mut w = MemWriter::new();
+        w.write(self.data);
+        w.write_u8(0x80 as u8);
+        w.write(vec::from_elem(56 - self.data.len() - 1, 0x00 as u8));
+        w.write_be_u64(self.length * 8);
+        m.process_block(w.get_ref());
 
-        let size_bits = self.length * 8;
-        size_bits.iter_bytes(false, |buf| {
-            data.push_all(buf);
-            true
-        });
-        m.process_block(data);
-
-        let mut bytes = ~[];
-
+        let mut w = BufWriter::new(out);
         for n in m.h.iter()
         {
-            n.iter_bytes(false, |buf| {
-                bytes.push_all(buf);
-                true
-            });
-        }
-
-        for (i, b) in bytes.iter().enumerate()
-        {
-            out[i] = *b;
+            w.write_be_u32(*n);
         }
     }
 
@@ -161,7 +149,8 @@ impl Hasher for SHA1
 #[cfg(test)]
 mod test
 {
-    use super::SHA1;
+    use hash::Hasher;
+    use hash::sha1::SHA1;
 
     #[test]
     fn test_simple()
@@ -197,8 +186,9 @@ mod test
 #[cfg(test)]
 mod bench
 {
-    use super::SHA1;
-    use extra::test::BenchHarness;
+    use hash::Hasher;
+    use hash::sha1::SHA1;
+    use test::test::BenchHarness;
 
     #[bench]
     fn bench_10(bh: &mut BenchHarness)

@@ -5,7 +5,10 @@
 
 #[license = "MIT"];
 
-extern mod extra;
+extern crate num;
+
+#[cfg(test)]
+extern crate test;
 
 pub mod base58;
 pub mod hash;

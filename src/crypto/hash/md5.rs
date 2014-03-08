@@ -1,4 +1,5 @@
 use std::vec;
+use std::io::{MemWriter, BufWriter};
 
 use super::Hasher;
 
@@ -118,6 +119,7 @@ impl Hasher for MD5
         }
     }
 
+    #[allow(unused_must_use)]
     fn output(&self, out: &mut [u8])
     {
         let mut m = MD5 {
@@ -126,31 +128,17 @@ impl Hasher for MD5
             length: 0,
         };
 
-        let mut data = self.data.clone();
-        let size = 56 - data.len() - 1;
-        data.push(0x80 as u8);
-        data.push_all(vec::from_elem(size, 0x00 as u8));
+        let mut w = MemWriter::new();
+        w.write(self.data);
+        w.write_u8(0x80);
+        w.write(vec::from_elem(56 - self.data.len() - 1, 0x00 as u8));
+        w.write_le_u64(self.length * 8);
+        m.process_block(w.get_ref());
 
-        let size_bits = self.length * 8;
-        size_bits.iter_bytes(true, |buf| {
-            data.push_all(buf);
-            true
-        });
-        m.process_block(data);
-
-        let mut bytes = ~[];
-
+        let mut w = BufWriter::new(out);
         for n in m.h.iter()
         {
-            n.iter_bytes(true, |buf| {
-                bytes.push_all(buf);
-                true
-            });
-        }
-
-        for (i, b) in bytes.iter().enumerate()
-        {
-            out[i] = *b;
+            w.write_le_u32(*n);
         }
     }
 
@@ -168,7 +156,8 @@ impl Hasher for MD5
 #[cfg(test)]
 mod test
 {
-    use super::MD5;
+    use hash::Hasher;
+    use hash::md5::MD5;
 
     #[test]
     fn test_simple()
@@ -178,13 +167,13 @@ mod test
             data.map(|c| format!("{:02x}", *c)).concat()
         }
 
-        let mut m = MD5::new();
-
         let tests = [
             ("The quick brown fox jumps over the lazy dog", ~"9e107d9d372bb6826bd81d3542a419d6"),
             ("The quick brown fox jumps over the lazy dog.", ~"e4d909c290d0fb1ca068ffaddf22cbd0"),
             ("", ~"d41d8cd98f00b204e9800998ecf8427e"),
         ];
+
+        let mut m = MD5::new();
 
         for &(s, ref h) in tests.iter()
         {
@@ -201,8 +190,9 @@ mod test
 #[cfg(test)]
 mod bench
 {
-    use super::MD5;
-    use extra::test::BenchHarness;
+    use hash::Hasher;
+    use hash::md5::MD5;
+    use test::test::BenchHarness;
 
     #[bench]
     fn bench_10(bh: &mut BenchHarness)

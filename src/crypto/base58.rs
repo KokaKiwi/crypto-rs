@@ -1,14 +1,14 @@
 use std::str;
 use std::vec;
 
-use extra::bigint::BigUint;
-use extra::bigint::ToBigUint;
+use num::bigint::BigUint;
+use num::bigint::ToBigUint;
 
 static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 pub fn to_base58(data: &[u8]) -> ~str
 {
-    let mut s = str::from_utf8(data);
+    let mut s = str::from_utf8(data).unwrap();
     let origlen = s.len();
     s = s.trim_left_chars(&'\0');
     let newlen = s.len();
@@ -71,7 +71,7 @@ mod test
 mod bench
 {
     use super::to_base58;
-    use extra::test::BenchHarness;
+    use test::test::BenchHarness;
 
     #[bench]
     fn bench_simple(bh: &mut BenchHarness)
