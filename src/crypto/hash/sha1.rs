@@ -1,13 +1,11 @@
 use super::Hasher;
 use std::io::{MemWriter, BufWriter};
 
-use std::vec;
-
 pub struct SHA1
 {
-    priv h: [u32, ..5],
-    priv data: ~[u8],
-    priv length: u64,
+    h: [u32, ..5],
+    data: ~[u8],
+    length: u64,
 }
 
 impl SHA1
@@ -43,7 +41,7 @@ impl SHA1
 
         let left_rotate = |x: u32, n: u32| (x << n) | (x >> (32 - n));
 
-        for i in range(16, 80)
+        for i in range(16u, 80u)
         {
             let n = words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16];
             words[i] = left_rotate(n, 1);
@@ -55,7 +53,7 @@ impl SHA1
         let mut d = self.h[3];
         let mut e = self.h[4];
 
-        for i in range(0, 80)
+        for i in range(0u, 80u)
         {
             let (f, k) = match i {
                 0..19  => (ff(b, c, d), 0x5a827999),
@@ -124,7 +122,7 @@ impl Hasher for SHA1
         let mut w = MemWriter::new();
         w.write(self.data);
         w.write_u8(0x80 as u8);
-        w.write(vec::from_elem(56 - self.data.len() - 1, 0x00 as u8));
+        w.write(Vec::from_elem(56 - self.data.len() - 1, 0x00 as u8).as_slice());
         w.write_be_u64(self.length * 8);
         m.process_block(w.get_ref());
 
@@ -152,14 +150,11 @@ mod test
     use hash::Hasher;
     use hash::sha1::SHA1;
 
+    use serialize::hex::ToHex;
+
     #[test]
     fn test_simple()
     {
-        fn to_hex(data: &[u8]) -> ~str
-        {
-            data.map(|c| format!("{:02x}", *c)).concat()
-        }
-
         let mut m = SHA1::new();
 
         let tests = [
@@ -175,7 +170,7 @@ mod test
             m.reset();
             m.update(data);
 
-            let hh = to_hex(m.digest());
+            let hh = m.digest().to_hex();
 
             assert_eq!(hh.len(), h.len());
             assert_eq!(hh, *h);

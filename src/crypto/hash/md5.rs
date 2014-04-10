@@ -1,4 +1,3 @@
-use std::vec;
 use std::io::{MemWriter, BufWriter};
 
 use super::Hasher;
@@ -23,9 +22,9 @@ static k: [u32, ..64] = [
 
 pub struct MD5
 {
-    priv h: [u32, ..4],
-    priv data: ~[u8],
-    priv length: u64,
+    h: [u32, ..4],
+    data: ~[u8],
+    length: u64,
 }
 
 impl MD5
@@ -131,7 +130,7 @@ impl Hasher for MD5
         let mut w = MemWriter::new();
         w.write(self.data);
         w.write_u8(0x80);
-        w.write(vec::from_elem(56 - self.data.len() - 1, 0x00 as u8));
+        w.write(Vec::from_elem(56 - self.data.len() - 1, 0x00 as u8).as_slice());
         w.write_le_u64(self.length * 8);
         m.process_block(w.get_ref());
 
@@ -159,14 +158,11 @@ mod test
     use hash::Hasher;
     use hash::md5::MD5;
 
+    use serialize::hex::ToHex;
+
     #[test]
     fn test_simple()
     {
-        fn to_hex(data: &[u8]) -> ~str
-        {
-            data.map(|c| format!("{:02x}", *c)).concat()
-        }
-
         let tests = [
             ("The quick brown fox jumps over the lazy dog", ~"9e107d9d372bb6826bd81d3542a419d6"),
             ("The quick brown fox jumps over the lazy dog.", ~"e4d909c290d0fb1ca068ffaddf22cbd0"),
@@ -182,7 +178,10 @@ mod test
             m.reset();
             m.update(data);
 
-            assert_eq!(to_hex(m.digest()), *h);
+            let hh = m.digest().to_hex();
+
+            assert_eq!(hh.len(), h.len());
+            assert_eq!(hh, *h);
         }
     }
 }

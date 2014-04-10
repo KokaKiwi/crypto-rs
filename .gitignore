@@ -1,5 +1,5 @@
 # Build stuff
-.rust_build
+/.rust
 /lib
 
 # Misc stuff

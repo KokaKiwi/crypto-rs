@@ -1,5 +1,4 @@
 use std::str;
-use std::vec;
 
 use num::bigint::BigUint;
 use num::bigint::ToBigUint;
@@ -13,7 +12,7 @@ pub fn to_base58(data: &[u8]) -> ~str
     s = s.trim_left_chars(&'\0');
     let newlen = s.len();
 
-    let mut num = BigUint::new(~[]);
+    let mut num = BigUint::new(Vec::new());
     let mut p = 1u.to_biguint().expect("wtf");
     for c in s.bytes_rev()
     {
@@ -30,11 +29,13 @@ pub fn to_base58(data: &[u8]) -> ~str
         let r = num % 58u.to_biguint().expect("wtf");
 
         num = d;
-        result.push_char(BASE58_ALPHABET[r.to_u64().expect("wtf")] as char);
+        result.push_char(BASE58_ALPHABET[r.to_uint().expect("wtf")] as char);
     }
 
-    result.push_char(BASE58_ALPHABET[num.to_u64().expect("wtf")] as char);
-    result.push_str(str::from_chars(vec::from_elem(origlen - newlen, BASE58_ALPHABET[0] as char)));
+    result.push_char(BASE58_ALPHABET[num.to_uint().expect("wtf")] as char);
+
+    let fill = Vec::from_elem(origlen - newlen, BASE58_ALPHABET[0] as char);
+    result.push_str(str::from_chars(fill.as_slice()));
 
     fn str_reverse(s: &str) -> ~str
     {

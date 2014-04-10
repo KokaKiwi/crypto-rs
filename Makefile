@@ -1,3 +1,3 @@
-RUSTCRATES          :=  crypto
+RUSTCRATES       =  crypto
 
-include             rust-mk/rust.mk
+include          rust-mk/rust.mk

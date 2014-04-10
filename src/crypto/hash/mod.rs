@@ -1,5 +1,3 @@
-use std::vec;
-
 pub mod md5;
 pub mod sha1;
 
@@ -50,10 +48,10 @@ pub trait Hasher
     fn digest(&self) -> ~[u8]
     {
         let size = self.output_size();
-        let mut buf = vec::from_elem(size, 0u8);
+        let mut buf = Vec::from_elem(size, 0u8);
 
-        self.output(buf);
+        self.output(buf.as_mut_slice());
 
-        buf
+        buf.as_slice().to_owned()
     }
 }
