@@ -183,10 +183,10 @@ mod bench
 {
     use hash::Hasher;
     use hash::sha1::SHA1;
-    use test::test::BenchHarness;
+    use test::test::Bencher;
 
     #[bench]
-    fn bench_10(bh: &mut BenchHarness)
+    fn bench_10(bh: &mut Bencher)
     {
         let bytes = [1u8, ..10];
 
@@ -200,7 +200,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_64(bh: &mut BenchHarness)
+    fn bench_64(bh: &mut Bencher)
     {
         let bytes = [1u8, ..64];
 
@@ -214,7 +214,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_1k(bh: &mut BenchHarness)
+    fn bench_1k(bh: &mut Bencher)
     {
         let bytes = [1u8, ..1024];
 
@@ -228,7 +228,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_64k(bh: &mut BenchHarness)
+    fn bench_64k(bh: &mut Bencher)
     {
         let bytes = [1u8, ..64 * 1024];
 
@@ -242,7 +242,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_update_64(bh: &mut BenchHarness)
+    fn bench_update_64(bh: &mut Bencher)
     {
         let bytes = [1u8, ..64];
         let mut m = SHA1::new();
@@ -255,7 +255,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_update_64k(bh: &mut BenchHarness)
+    fn bench_update_64k(bh: &mut Bencher)
     {
         let bytes = [1u8, ..64 * 1024];
         let mut m = SHA1::new();
@@ -268,7 +268,7 @@ mod bench
     }
 
     #[bench]
-    fn bench_update_128k(bh: &mut BenchHarness)
+    fn bench_update_128k(bh: &mut Bencher)
     {
         let bytes = [1u8, ..2 * 64 * 1024];
         let mut m = SHA1::new();

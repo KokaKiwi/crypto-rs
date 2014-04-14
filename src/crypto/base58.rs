@@ -1,4 +1,5 @@
 use std::str;
+use std::strbuf::StrBuf;
 
 use num::bigint::BigUint;
 use num::bigint::ToBigUint;
@@ -22,7 +23,7 @@ pub fn to_base58(data: &[u8]) -> ~str
         p = p << 8;
     }
 
-    let mut result = ~"";
+    let mut result = StrBuf::new();
     while num >= 58u.to_biguint().expect("wtf")
     {
         let d = num / 58u.to_biguint().expect("wtf");
@@ -41,7 +42,7 @@ pub fn to_base58(data: &[u8]) -> ~str
     {
         s.chars_rev().collect()
     }
-    str_reverse(result)
+    str_reverse(result.as_slice())
 }
 
 #[cfg(test)]
@@ -72,10 +73,10 @@ mod test
 mod bench
 {
     use super::to_base58;
-    use test::test::BenchHarness;
+    use test::test::Bencher;
 
     #[bench]
-    fn bench_simple(bh: &mut BenchHarness)
+    fn bench_simple(bh: &mut Bencher)
     {
         let s = "hello world";
 
