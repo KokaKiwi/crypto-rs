@@ -1,5 +1,4 @@
 use std::str;
-use std::strbuf::StrBuf;
 
 use num::bigint::BigUint;
 use num::bigint::ToBigUint;
