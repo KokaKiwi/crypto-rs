@@ -1,47 +1,41 @@
-use std::str;
-
-use num::bigint::BigUint;
 use num::bigint::ToBigUint;
+use num::Integer;
 
 static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 pub fn to_base58(data: &[u8]) -> ~str
 {
-    let mut s = str::from_utf8(data).unwrap();
-    let origlen = s.len();
-    s = s.trim_left_chars(&'\0');
-    let newlen = s.len();
+    let mut n = 0u.to_biguint().unwrap();
+    for (i, c) in data.rev_iter().enumerate() {
+        let c = c.to_biguint().unwrap();
 
-    let mut num = BigUint::new(Vec::new());
-    let mut p = 1u.to_biguint().expect("wtf");
-    for c in s.bytes_rev()
-    {
-        let mut n = c.to_biguint().expect("wtf");
-        n = n * p;
-        num = num + n;
-        p = p << 8;
+        n =n + (c << (i * 8));
     }
 
     let mut result = StrBuf::new();
-    while num >= 58u.to_biguint().expect("wtf")
-    {
-        let d = num / 58u.to_biguint().expect("wtf");
-        let r = num % 58u.to_biguint().expect("wtf");
+    let limit = 58u.to_biguint().unwrap();
+    while n >= limit {
+        let (d, r) = n.div_rem(&limit);
+        let r = r.to_uint().unwrap();
 
-        num = d;
-        result.push_char(BASE58_ALPHABET[r.to_uint().expect("wtf")] as char);
+        n = d;
+        result.push_char(BASE58_ALPHABET[r] as char);
+    }
+    let r = n.to_uint().unwrap();
+
+    if r > 0 {
+        result.push_char(BASE58_ALPHABET[r] as char);
     }
 
-    result.push_char(BASE58_ALPHABET[num.to_uint().expect("wtf")] as char);
-
-    let fill = Vec::from_elem(origlen - newlen, BASE58_ALPHABET[0] as char);
-    result.push_str(str::from_chars(fill.as_slice()));
-
-    fn str_reverse(s: &str) -> ~str
-    {
-        s.chars_rev().collect()
+    for c in data.iter() {
+        if *c == 0 {
+            result.push_char(BASE58_ALPHABET[0] as char);
+        } else {
+            break;
+        }
     }
-    str_reverse(result.as_slice())
+
+    result.as_slice().chars_rev().collect()
 }
 
 #[cfg(test)]
@@ -52,19 +46,16 @@ mod test
     #[test]
     fn test_simple()
     {
-        let s = "hello world";
-        let r = to_base58(s.as_bytes());
+        let tests = ~[
+            ("hello world".as_bytes(), "StV1DL6CwTryKyV"),
+            ("Hello World".as_bytes(), "JxF12TrwUP45BMd"),
+        ];
 
-        assert_eq!(r, ~"StV1DL6CwTryKyV");
-    }
+        for &(s, n) in tests.iter() {
+            let r = to_base58(s);
 
-    #[test]
-    fn test_padding()
-    {
-        let s = "\0\0\0hello world";
-        let r = to_base58(s.as_bytes());
-
-        assert_eq!(r, ~"111StV1DL6CwTryKyV");
+            assert_eq!(r.as_slice(), n);
+        }
     }
 }
 
