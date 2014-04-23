@@ -55,3 +55,30 @@ pub trait Hasher
         buf.as_slice().to_owned()
     }
 }
+
+pub trait Hashable {
+    /**
+     * Feed the value to the hasher passed in parameter.
+     */
+     fn feed<H: Hasher>(&self, h: &mut H);
+
+    /**
+     * Hash the value to ~[u8].
+     *
+     * Reset the hasher passed in parameter, because we want
+     * an empty hasher to get only the value's hash.
+     */
+    fn to_hash<H: Hasher>(&self, h: &mut H) -> ~[u8]
+    {
+        h.reset();
+        self.feed(h);
+        h.digest()
+    }
+}
+
+impl<'a> Hashable for &'a [u8] {
+    fn feed<H: Hasher>(&self, h: &mut H)
+    {
+        h.update(*self)
+    }
+}
