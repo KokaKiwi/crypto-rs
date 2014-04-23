@@ -1,6 +1,5 @@
 #![crate_id = "crypto#0.2.0"]
-#![crate_type = "rlib"]
-#![crate_type = "dylib"]
+#![crate_type = "lib"]
 #![license = "MIT"]
 
 extern crate num;
