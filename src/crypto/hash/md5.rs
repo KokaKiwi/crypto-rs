@@ -23,7 +23,7 @@ static k: [u32, ..64] = [
 pub struct MD5
 {
     h: [u32, ..4],
-    data: ~[u8],
+    data: Vec<u8>,
     length: u64,
 }
 
@@ -33,7 +33,7 @@ impl MD5
     {
         MD5 {
             h: [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476],
-            data: ~[],
+            data: Vec::new(),
             length: 0,
         }
     }
@@ -92,18 +92,18 @@ impl Hasher for MD5
     fn reset(&mut self)
     {
         self.h = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
-        self.data = ~[];
+        self.data.clear();
         self.length = 0;
     }
 
     fn update(&mut self, data: &[u8])
     {
         let mut d = self.data.clone();
-        self.data = ~[];
+        self.data.clear();
 
         d.push_all(data);
 
-        for chunk in d.chunks(64)
+        for chunk in d.as_slice().chunks(64)
         {
             self.length += chunk.len() as u64;
 
@@ -123,12 +123,12 @@ impl Hasher for MD5
     {
         let mut m = MD5 {
             h: self.h,
-            data: ~[],
+            data: Vec::new(),
             length: 0,
         };
 
         let mut w = MemWriter::new();
-        w.write(self.data);
+        w.write(self.data.as_slice());
         w.write_u8(0x80);
         w.write(Vec::from_elem(56 - self.data.len() - 1, 0x00 as u8).as_slice());
         w.write_le_u64(self.length * 8);
