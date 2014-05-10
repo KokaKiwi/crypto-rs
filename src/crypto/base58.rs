@@ -6,7 +6,7 @@ static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefg
 pub fn to_base58(data: &[u8]) -> ~str
 {
     let mut n = 0u.to_biguint().unwrap();
-    for (i, c) in data.rev_iter().enumerate() {
+    for (i, c) in data.iter().rev().enumerate() {
         let c = c.to_biguint().unwrap();
 
         n =n + (c << (i * 8));
@@ -35,7 +35,7 @@ pub fn to_base58(data: &[u8]) -> ~str
         }
     }
 
-    result.as_slice().chars_rev().collect()
+    result.as_slice().chars().rev().collect()
 }
 
 #[cfg(test)]

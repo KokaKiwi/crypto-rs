@@ -164,9 +164,9 @@ mod test
     fn test_simple()
     {
         let tests = [
-            ("The quick brown fox jumps over the lazy dog", ~"9e107d9d372bb6826bd81d3542a419d6"),
-            ("The quick brown fox jumps over the lazy dog.", ~"e4d909c290d0fb1ca068ffaddf22cbd0"),
-            ("", ~"d41d8cd98f00b204e9800998ecf8427e"),
+            ("The quick brown fox jumps over the lazy dog", "9e107d9d372bb6826bd81d3542a419d6"),
+            ("The quick brown fox jumps over the lazy dog.", "e4d909c290d0fb1ca068ffaddf22cbd0"),
+            ("", "d41d8cd98f00b204e9800998ecf8427e"),
         ];
 
         let mut m = MD5::new();
@@ -181,7 +181,7 @@ mod test
             let hh = m.digest().to_hex();
 
             assert_eq!(hh.len(), h.len());
-            assert_eq!(hh, *h);
+            assert_eq!(hh.as_slice(), *h);
         }
     }
 }
