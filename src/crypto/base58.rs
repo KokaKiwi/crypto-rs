@@ -3,7 +3,7 @@ use num::Integer;
 
 static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-pub fn to_base58(data: &[u8]) -> ~str
+pub fn to_base58(data: &[u8]) -> StrBuf
 {
     let mut n = 0u.to_biguint().unwrap();
     for (i, c) in data.iter().rev().enumerate() {
@@ -46,7 +46,7 @@ mod test
     #[test]
     fn test_simple()
     {
-        let tests = ~[
+        let tests = [
             ("hello world".as_bytes(), "StV1DL6CwTryKyV"),
             ("Hello World".as_bytes(), "JxF12TrwUP45BMd"),
         ];
