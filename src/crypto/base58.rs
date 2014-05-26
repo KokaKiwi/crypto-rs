@@ -3,7 +3,7 @@ use num::Integer;
 
 static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-pub fn to_base58(data: &[u8]) -> StrBuf
+pub fn to_base58(data: &[u8]) -> String
 {
     let mut n = 0u.to_biguint().unwrap();
     for (i, c) in data.iter().rev().enumerate() {
@@ -12,7 +12,7 @@ pub fn to_base58(data: &[u8]) -> StrBuf
         n =n + (c << (i * 8));
     }
 
-    let mut result = StrBuf::new();
+    let mut result = String::new();
     let limit = 58u.to_biguint().unwrap();
     while n >= limit {
         let (d, r) = n.div_rem(&limit);
