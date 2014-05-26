@@ -170,7 +170,7 @@ mod test
             m.reset();
             m.update(data);
 
-            let hh = m.digest().to_hex();
+            let hh = m.digest().as_slice().to_hex();
 
             assert_eq!(hh.len(), h.len());
             assert_eq!(hh.as_slice(), *h);
