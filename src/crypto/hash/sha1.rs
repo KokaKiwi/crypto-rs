@@ -158,9 +158,9 @@ mod test
         let mut m = SHA1::new();
 
         let tests = [
-            ("The quick brown fox jumps over the lazy dog", ~"2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"),
-            ("The quick brown fox jumps over the lazy cog", ~"de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3"),
-            ("", ~"da39a3ee5e6b4b0d3255bfef95601890afd80709"),
+            ("The quick brown fox jumps over the lazy dog", "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"),
+            ("The quick brown fox jumps over the lazy cog", "de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3"),
+            ("", "da39a3ee5e6b4b0d3255bfef95601890afd80709"),
         ];
 
         for &(s, ref h) in tests.iter()
@@ -170,10 +170,10 @@ mod test
             m.reset();
             m.update(data);
 
-            let hh = m.digest().to_hex();
+            let hh = m.digest().as_slice().to_hex();
 
             assert_eq!(hh.len(), h.len());
-            assert_eq!(hh, *h);
+            assert_eq!(hh.as_slice(), *h);
         }
     }
 }

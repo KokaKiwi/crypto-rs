@@ -3,16 +3,16 @@ use num::Integer;
 
 static BASE58_ALPHABET: &'static str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-pub fn to_base58(data: &[u8]) -> ~str
+pub fn to_base58(data: &[u8]) -> String
 {
     let mut n = 0u.to_biguint().unwrap();
-    for (i, c) in data.rev_iter().enumerate() {
+    for (i, c) in data.iter().rev().enumerate() {
         let c = c.to_biguint().unwrap();
 
         n =n + (c << (i * 8));
     }
 
-    let mut result = StrBuf::new();
+    let mut result = String::new();
     let limit = 58u.to_biguint().unwrap();
     while n >= limit {
         let (d, r) = n.div_rem(&limit);
@@ -35,7 +35,7 @@ pub fn to_base58(data: &[u8]) -> ~str
         }
     }
 
-    result.as_slice().chars_rev().collect()
+    result.as_slice().chars().rev().collect()
 }
 
 #[cfg(test)]
@@ -46,7 +46,7 @@ mod test
     #[test]
     fn test_simple()
     {
-        let tests = ~[
+        let tests = [
             ("hello world".as_bytes(), "StV1DL6CwTryKyV"),
             ("Hello World".as_bytes(), "JxF12TrwUP45BMd"),
         ];

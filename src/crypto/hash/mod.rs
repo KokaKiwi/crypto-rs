@@ -45,14 +45,14 @@ pub trait Hasher
         (self.block_size_bits() + 7) / 8
     }
 
-    fn digest(&self) -> ~[u8]
+    fn digest(&self) -> Vec<u8>
     {
         let size = self.output_size();
         let mut buf = Vec::from_elem(size, 0u8);
 
         self.output(buf.as_mut_slice());
 
-        buf.as_slice().to_owned()
+        buf
     }
 }
 
@@ -68,7 +68,7 @@ pub trait Hashable {
      * Reset the hasher passed in parameter, because we want
      * an empty hasher to get only the value's hash.
      */
-    fn to_hash<H: Hasher>(&self, h: &mut H) -> ~[u8]
+    fn to_hash<H: Hasher>(&self, h: &mut H) -> Vec<u8>
     {
         h.reset();
         self.feed(h);
