@@ -1,0 +1,10 @@
+[project]
+name = "crypto"
+version = "0.1.0"
+
+authors = ["KokaKiwi <kokakiwi@kokakiwi.net>"]
+tags = ["crypto", "hash"]
+
+[[lib]]
+name = "crypto"
+path = "src/crypto/lib.rs"

@@ -1,6 +1,7 @@
 # Build stuff
 /.rust
 /lib
+/target
 
 # Misc stuff
 .*
