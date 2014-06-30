@@ -39,7 +39,7 @@ impl SHA1
         let hh = |b: u32, c: u32, d: u32| (b & c) | (d & (b | c));
         let ii = |b: u32, c: u32, d: u32| b ^ c ^ d;
 
-        let left_rotate = |x: u32, n: u32| (x << n) | (x >> (32 - n));
+        let left_rotate = |x: u32, n: u32| (x << n as uint) | (x >> (32 - n) as uint);
 
         for i in range(16u, 80u)
         {

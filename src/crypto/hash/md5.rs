@@ -58,7 +58,7 @@ impl MD5
         let hh = |b: u32, c: u32, d: u32| (b ^ c ^ d);
         let ii = |b: u32, c: u32, d: u32| (c ^ (b | !d));
 
-        let left_rotate = |x: u32, n: u32| (x << n) | (x >> (32 - n));
+        let left_rotate = |x: u32, n: u32| (x << n as uint) | (x >> (32 - n) as uint);
 
         let h = self.h;
         let (mut a, mut b, mut c, mut d) = (h[0], h[1], h[2], h[3]);
