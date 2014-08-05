@@ -1,4 +1,4 @@
-#![crate_id = "crypto#0.2.0"]
+#![crate_name = "crypto"]
 #![crate_type = "lib"]
 #![license = "MIT"]
 
