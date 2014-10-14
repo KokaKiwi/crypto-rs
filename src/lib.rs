@@ -1,7 +1,3 @@
-#![crate_name = "crypto"]
-#![crate_type = "lib"]
-#![license = "MIT"]
-
 extern crate num;
 
 #[cfg(test)]

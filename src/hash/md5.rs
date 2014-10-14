@@ -2,14 +2,14 @@ use std::io::{MemWriter, BufWriter};
 
 use super::Hasher;
 
-static r: [u32, ..64]=  [
+static R: [u32, ..64]=  [
     7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
     5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
     4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
     6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,
 ];
 
-static k: [u32, ..64] = [
+static K: [u32, ..64] = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
     0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
@@ -66,17 +66,17 @@ impl MD5
         for i in range(0u, 64u)
         {
             let (f, g) = match i {
-                0..15   => (ff(b, c, d), i),
-                16..31  => (gg(b, c, d), (5 * i + 1) % 16),
-                32..47  => (hh(b, c, d), (3 * i + 5) % 16),
-                48..63  => (ii(b, c, d), (7 * i) % 16),
+                0...15   => (ff(b, c, d), i),
+                16...31  => (gg(b, c, d), (5 * i + 1) % 16),
+                32...47  => (hh(b, c, d), (3 * i + 5) % 16),
+                48...63  => (ii(b, c, d), (7 * i) % 16),
                 _ => (0, 0),
             };
 
             let tmp = d;
             d = c;
             c = b;
-            b = left_rotate(a + f + k[i] + words[g], r[i]) + b;
+            b = left_rotate(a + f + K[i] + words[g], R[i]) + b;
             a = tmp;
         }
 

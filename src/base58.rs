@@ -19,17 +19,17 @@ pub fn to_base58(data: &[u8]) -> String
         let r = r.to_uint().unwrap();
 
         n = d;
-        result.push_char(BASE58_ALPHABET.char_at(r));
+        result.push(BASE58_ALPHABET.char_at(r));
     }
     let r = n.to_uint().unwrap();
 
     if r > 0 {
-        result.push_char(BASE58_ALPHABET.char_at(r));
+        result.push(BASE58_ALPHABET.char_at(r));
     }
 
     for c in data.iter() {
         if *c == 0 {
-            result.push_char(BASE58_ALPHABET.char_at(0));
+            result.push(BASE58_ALPHABET.char_at(0));
         } else {
             break;
         }

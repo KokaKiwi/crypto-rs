@@ -1,11 +1,9 @@
 # Build stuff
-/.rust
-/lib
 /target
+/Cargo.lock
 
 # Misc stuff
 .*
 !.gitignore
-!.gitmodules
 !.editorconfig
 !.travis.yml

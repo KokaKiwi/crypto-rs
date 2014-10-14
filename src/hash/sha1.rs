@@ -56,10 +56,10 @@ impl SHA1
         for i in range(0u, 80u)
         {
             let (f, k) = match i {
-                0..19  => (ff(b, c, d), 0x5a827999),
-                20..39 => (gg(b, c, d), 0x6ed9eba1),
-                40..59 => (hh(b, c, d), 0x8f1bbcdc),
-                60..79 => (ii(b, c, d), 0xca62c1d6),
+                0...19  => (ff(b, c, d), 0x5a827999),
+                20...39 => (gg(b, c, d), 0x6ed9eba1),
+                40...59 => (hh(b, c, d), 0x8f1bbcdc),
+                60...79 => (ii(b, c, d), 0xca62c1d6),
                 _ => (0, 0),
             };
 

@@ -2,8 +2,9 @@
 name = "crypto"
 version = "0.1.0"
 
-authors = ["KokaKiwi <kokakiwi@kokakiwi.net>"]
+authors = [
+    "KokaKiwi <kokakiwi@kokakiwi.net>",
+]
 
-[[lib]]
-name = "crypto"
-path = "src/crypto/lib.rs"
+[dependencies.num]
+git = "https://github.com/rust-lang/num"
